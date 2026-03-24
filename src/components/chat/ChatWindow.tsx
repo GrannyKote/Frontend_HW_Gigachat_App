@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Message as MessageT } from "../../types";
+import type { Message as MessageT, MessageRole } from "../../types";
 import { BurgerIcon, GearIcon } from "../ui/icons";
 import MessageList from "./MessageList";
 import InputArea from "./InputArea";
+
+type ChatMessage = {
+  id: string;
+  role: MessageRole;
+  content: string;
+  timestamp: string;
+};
 
 type Props = {
   chatTitle: string;
@@ -17,23 +24,76 @@ export default function ChatWindow({
   onOpenSidebar,
   onOpenSettings,
 }: Props) {
-  const [draft, setDraft] = useState("");
-  const [isTypingVisible] = useState(true);
-  const listRef = useRef<HTMLDivElement | null>(null);
-
-  const canSend = draft.trim().length > 0;
-
-  const renderedMessages = useMemo(() => messages, [messages]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const timeoutRef = useRef<number | null>(null);
+  const endRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const el = listRef.current;
-    if (!el) return;
-    el.scrollTop = el.scrollHeight;
-  }, [renderedMessages.length]);
+    setChatMessages(
+      messages.map((m) => ({
+        id: m.id,
+        role: m.role,
+        content: m.text,
+        timestamp: m.createdAt,
+      })),
+    );
+    setIsLoading(false);
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, [messages, chatTitle]);
 
-  const onSend = () => {
-    if (!canSend) return;
-    setDraft("");
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const renderedMessages = useMemo<MessageT[]>(
+    () =>
+      chatMessages.map((m) => ({
+        id: m.id,
+        role: m.role,
+        text: m.content,
+        createdAt: m.timestamp,
+        authorLabel: m.role === "user" ? "Вы" : "GigaChat",
+      })),
+    [chatMessages],
+  );
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [renderedMessages]);
+
+  const onSend = (value: string) => {
+    if (!value.trim() || isLoading) return;
+
+    const userMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: value,
+      timestamp: new Date().toISOString(),
+    };
+
+    setChatMessages((prev) => [...prev, userMessage]);
+    setIsLoading(true);
+
+    const delay = 1000 + Math.floor(Math.random() * 1001);
+    timeoutRef.current = window.setTimeout(() => {
+      const assistantMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "Это мок-ответ ассистента. Позже здесь будет реальный ответ API.",
+        timestamp: new Date().toISOString(),
+      };
+      setChatMessages((prev) => [...prev, assistantMessage]);
+      setIsLoading(false);
+      timeoutRef.current = null;
+    }, delay);
   };
 
   return (
@@ -61,17 +121,13 @@ export default function ChatWindow({
         </button>
       </div>
 
-      <div className="messages" ref={listRef}>
-        <MessageList messages={renderedMessages} isTypingVisible={isTypingVisible} />
+      <div className="messages">
+        <MessageList messages={renderedMessages} isTypingVisible={isLoading} />
+        <div ref={endRef} />
       </div>
 
       <div className="inputArea">
-        <InputArea
-          value={draft}
-          onChange={setDraft}
-          onSend={onSend}
-          canSend={canSend}
-        />
+        <InputArea onSend={onSend} isLoading={isLoading} />
       </div>
     </>
   );
