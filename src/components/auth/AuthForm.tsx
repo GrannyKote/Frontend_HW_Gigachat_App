@@ -32,32 +32,11 @@ export default function AuthForm({ onLogin }: Props) {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "grid",
-        placeItems: "center",
-        padding: 16,
-      }}
-    >
-      <form
-        onSubmit={submit}
-        style={{
-          width: "min(520px, 100%)",
-          border: "1px solid var(--color-border)",
-          background: "var(--color-surface)",
-          borderRadius: 18,
-          padding: 18,
-          boxShadow: "var(--shadow)",
-        }}
-      >
-        <div style={{ marginBottom: 10 }}>
-          <div style={{ fontSize: 18, fontWeight: 750, marginBottom: 6 }}>
-            Вход
-          </div>
-          <div style={{ color: "var(--color-text-muted)" }}>
-            Моковая авторизация для оболочки приложения.
-          </div>
+    <div className="authPage">
+      <form onSubmit={submit} className="authFormCard">
+        <div className="authHeader">
+          <div className="authTitle">Вход</div>
+          <div className="authSubtitle">Моковая авторизация для оболочки приложения.</div>
         </div>
 
         <div className="field">
@@ -76,21 +55,9 @@ export default function AuthForm({ onLogin }: Props) {
 
         <div className="field">
           <div className="label">Scope</div>
-          <div style={{ display: "grid", gap: 8 }}>
+          <div className="scopeGrid">
             {scopes.map((s) => (
-              <label
-                key={s.id}
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  alignItems: "center",
-                  padding: "10px 12px",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: 12,
-                  background: "var(--color-surface-2)",
-                  cursor: "pointer",
-                }}
-              >
+              <label key={s.id} className="scopeItem">
                 <input
                   type="radio"
                   name="scope"
@@ -104,7 +71,7 @@ export default function AuthForm({ onLogin }: Props) {
           </div>
         </div>
 
-        <div className="row" style={{ marginTop: 14 }}>
+        <div className="row rowTopGapSm">
           <button className="btn btnPrimary" type="submit">
             Войти
           </button>

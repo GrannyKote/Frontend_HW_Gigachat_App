@@ -96,6 +96,15 @@ export default function ChatWindow({
     }, delay);
   };
 
+  const onStop = () => {
+    if (!isLoading) return;
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsLoading(false);
+  };
+
   return (
     <>
       <div className="topbar">
@@ -127,7 +136,7 @@ export default function ChatWindow({
       </div>
 
       <div className="inputArea">
-        <InputArea onSend={onSend} isLoading={isLoading} />
+        <InputArea onSend={onSend} onStop={onStop} isLoading={isLoading} />
       </div>
     </>
   );

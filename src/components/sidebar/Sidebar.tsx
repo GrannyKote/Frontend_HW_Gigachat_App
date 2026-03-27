@@ -24,35 +24,20 @@ export default function Sidebar({
   return (
     <>
       {isOpen ? (
-        <div
-          className="overlay"
-          onClick={onClose}
-          role="presentation"
-          style={{ justifyContent: "flex-start" }}
-        />
+        <div className="overlay overlayStart" onClick={onClose} role="presentation" />
       ) : null}
       <aside className={`sidebar ${isOpen ? "sidebarOpen" : ""}`}>
         <div className="sidebarHeader">
           <button className="btn btnIcon" type="button" title="Новый чат">
             <PlusIcon />
           </button>
-          <div style={{ flex: 1, display: "flex", gap: 10, minWidth: 0 }}>
-            <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-              <div
-                style={{
-                  position: "absolute",
-                  left: 12,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  opacity: 0.8,
-                }}
-                aria-hidden="true"
-              >
+          <div className="sidebarSearchWrap">
+            <div className="searchBox">
+              <div className="searchIcon" aria-hidden="true">
                 <SearchIcon />
               </div>
               <input
                 className="searchInput"
-                style={{ paddingLeft: 38 }}
                 value={search}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Поиск по чатам"

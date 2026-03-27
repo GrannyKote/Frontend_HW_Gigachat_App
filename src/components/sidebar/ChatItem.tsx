@@ -23,7 +23,7 @@ export default function ChatItem({ chat, isActive, onSelect }: Props) {
         if (e.key === "Enter") onSelect();
       }}
     >
-      <div style={{ minWidth: 0 }}>
+      <div className="minW0">
         <div className="chatItemTitle" title={chat.title}>
           {chat.title}
         </div>
