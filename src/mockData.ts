@@ -5,11 +5,11 @@ const iso = (d: Date) => d.toISOString();
 const daysAgo = (n: number) => new Date(now.getTime() - n * 24 * 60 * 60 * 1000);
 
 export const mockChats: Chat[] = [
-  { id: "c1", title: "План на неделю по фронтенду", lastMessageAt: iso(daysAgo(0)) },
-  { id: "c2", title: "Разбор CSS Grid и Flexbox (конспект)", lastMessageAt: iso(daysAgo(1)) },
-  { id: "c3", title: "Идеи для pet-проекта: трекер привычек", lastMessageAt: iso(daysAgo(2)) },
-  { id: "c4", title: "Ошибки в TypeScript: union vs enum", lastMessageAt: iso(daysAgo(5)) },
-  { id: "c5", title: "Подготовка к собеседованию: React вопросы", lastMessageAt: iso(daysAgo(8)) },
+  { id: "c1", title: "План на неделю по фронтенду", lastMessageAt: iso(daysAgo(0)), createdAt: iso(daysAgo(0)) },
+  { id: "c2", title: "Разбор CSS Grid и Flexbox (конспект)", lastMessageAt: iso(daysAgo(1)), createdAt: iso(daysAgo(1)) },
+  { id: "c3", title: "Идеи для pet-проекта: трекер привычек", lastMessageAt: iso(daysAgo(2)), createdAt: iso(daysAgo(2)) },
+  { id: "c4", title: "Ошибки в TypeScript: union vs enum", lastMessageAt: iso(daysAgo(5)), createdAt: iso(daysAgo(5)) },
+  { id: "c5", title: "Подготовка к собеседованию: React вопросы", lastMessageAt: iso(daysAgo(8)), createdAt: iso(daysAgo(8)) },
 ];
 
 export const mockMessagesByChatId: Record<string, Message[]> = {
