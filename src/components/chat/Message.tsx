@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
 import type { Message as MessageT } from "../../types";
 
 type Props = { message: MessageT };
@@ -12,7 +13,7 @@ export default function Message({ message }: Props) {
     try {
       await navigator.clipboard.writeText(message.text);
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 900);
+      window.setTimeout(() => setCopied(false), 2000);
     } catch {
       // ignore
     }
@@ -20,24 +21,32 @@ export default function Message({ message }: Props) {
 
   return (
     <div className={`messageRow ${isUser ? "messageRowUser" : ""}`}>
-      {!isUser ? (
+      {!isUser && (
         <div className="avatar" title="GigaChat" aria-label="GigaChat">
           G
         </div>
-      ) : null}
+      )}
 
       <div className={`bubble ${isUser ? "bubbleUser" : ""}`}>
         <div className="bubbleHeader">
           <div className="author">{message.authorLabel}</div>
-          <button className="copyBtn" type="button" onClick={copy} title="Копировать">
-            {copied ? "Скопировано" : "Копировать"}
-          </button>
+          {!isUser && (
+            <button
+              className={copied ? "copiedBtn" : "copyBtn"}
+              type="button"
+              onClick={copy}
+              title="Копировать"
+            >
+              {copied ? "Скопировано" : "Копировать"}
+            </button>
+          )}
         </div>
         <div className="md">
-          <ReactMarkdown>{message.text}</ReactMarkdown>
+          <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+            {message.text}
+          </ReactMarkdown>
         </div>
       </div>
     </div>
   );
 }
-
