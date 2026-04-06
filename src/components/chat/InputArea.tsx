@@ -1,16 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ImageIcon } from "../ui/icons";
 
 type Props = {
-  onSend: (value: string) => void;
-  isLoading: boolean;
+  value: string;
+  onChange: (v: string) => void;
+  onSend: () => void;
+  canSend: boolean;
 };
 
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
-export default function InputArea({ onSend, isLoading }: Props) {
+export default function InputArea({ value, onChange, onSend, canSend }: Props) {
   const ref = useRef<HTMLTextAreaElement | null>(null);
-  const [value, setValue] = useState("");
 
   const maxHeight = useMemo(() => {
     const el = ref.current;
@@ -30,15 +31,6 @@ export default function InputArea({ onSend, isLoading }: Props) {
     el.style.height = `${next}px`;
   }, [value, maxHeight]);
 
-  const canSend = value.trim().length > 0 && !isLoading;
-
-  const handleSend = () => {
-    const trimmed = value.trim();
-    if (!trimmed || isLoading) return;
-    onSend(trimmed);
-    setValue("");
-  };
-
   return (
     <div className="row" style={{ alignItems: "flex-end" }}>
       <button className="btn btnIcon" type="button" title="Прикрепить изображение">
@@ -50,13 +42,12 @@ export default function InputArea({ onSend, isLoading }: Props) {
         className="control"
         style={{ flex: 1, minHeight: 44, maxHeight, overflow: "auto" }}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         placeholder="Напишите сообщение…"
-        disabled={isLoading}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            handleSend();
+            onSend();
           }
         }}
       />
@@ -64,7 +55,7 @@ export default function InputArea({ onSend, isLoading }: Props) {
       <button className="btn" type="button" disabled>
         Стоп
       </button>
-      <button className="btn btnPrimary" type="button" onClick={handleSend} disabled={!canSend}>
+      <button className="btn btnPrimary" type="button" onClick={onSend} disabled={!canSend}>
         Отправить
       </button>
     </div>

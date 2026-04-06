@@ -14,7 +14,7 @@ export default function MessageList({ messages, isTypingVisible }: Props) {
   return (
     <>
       {messages.map((m) => (
-        <Message key={m.id} message={m} variant={m.role} />
+        <Message key={m.id} message={m} />
       ))}
       <TypingIndicator isVisible={Boolean(isTypingVisible)} />
     </>
