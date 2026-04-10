@@ -20,14 +20,16 @@ export default function Message({ message }: Props) {
   };
 
   return (
-    <div className={`messageRow ${isUser ? "messageRowUser" : ""}`}>
+    <div
+      className={`messageRow ${isUser ? "messageRowUser" : "messageRowAssistant"}`}
+    >
       {!isUser && (
         <div className="avatar" title="GigaChat" aria-label="GigaChat">
           G
         </div>
       )}
 
-      <div className={`bubble ${isUser ? "bubbleUser" : ""}`}>
+      <div className={`bubble ${isUser ? "bubbleUser" : "bubbleAssistant"}`}>
         <div className="bubbleHeader">
           <div className="author">{message.authorLabel}</div>
           {!isUser && (

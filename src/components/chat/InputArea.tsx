@@ -4,7 +4,7 @@ import { StopIcon } from "../ui/icons";
 type Props = {
   value: string;
   onChange: (v: string) => void;
-  onSend: () => void;
+  onSend: (text: string) => void;
   onStop: () => void;
   canSend: boolean;
   isLoading: boolean;
@@ -19,6 +19,7 @@ export default function InputArea({
   isLoading,
 }: Props) {
   const ref = useRef<HTMLTextAreaElement | null>(null);
+  const trimmedValue = value.trim();
 
   useEffect(() => {
     const el = ref.current;
@@ -38,7 +39,7 @@ export default function InputArea({
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            if (canSend) onSend();
+            if (canSend) onSend(trimmedValue);
           }
         }}
       />
@@ -51,7 +52,7 @@ export default function InputArea({
         <button
           className="btn btnPrimary"
           type="button"
-          onClick={onSend}
+          onClick={() => onSend(trimmedValue)}
           disabled={!canSend}
         >
           Отправить

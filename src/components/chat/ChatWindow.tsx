@@ -56,10 +56,10 @@ export default function ChatWindow({
     }
   }, [chatId]);
 
-  const onSend = async () => {
-    if (!canSend) return;
+  const onSend = async (nextText?: string) => {
+    const userText = (nextText ?? draft).trim();
+    if (!userText || isLoading) return;
 
-    const userText = draft.trim();
     setDraft("");
 
     const userMessage: MessageT = {
