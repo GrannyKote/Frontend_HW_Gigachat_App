@@ -26,9 +26,9 @@ export default function ChatList({
             key={c.id}
             chat={c}
             isActive={c.id === activeChatId}
-            onSelect={() => onChatSelect(c.id)}
-            onDelete={() => onDeleteChat(c.id)}
-            onRename={(title) => onRenameChat(c.id, title)}
+            onSelect={onChatSelect}
+            onDelete={onDeleteChat}
+            onRename={onRenameChat}
           />
         ))
       )}

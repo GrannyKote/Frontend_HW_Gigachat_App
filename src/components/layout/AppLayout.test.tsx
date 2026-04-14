@@ -96,7 +96,7 @@ describe("AppLayout", () => {
       </MemoryRouter>,
     );
 
-    const activeChatItem = within(screen.getByRole("list"))
+    const activeChatItem = within(await screen.findByRole("list"))
       .getByText("Активный чат")
       .closest('[role="listitem"]');
 

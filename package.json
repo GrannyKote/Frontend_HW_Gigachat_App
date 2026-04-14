@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "analyze:bundle": "vite-bundle-visualizer --open false --sourcemap --output docs/bundle-stats.html",
     "preview": "vite preview",
     "test": "vitest run"
   },
@@ -27,6 +28,7 @@
     "jsdom": "^29.0.2",
     "typescript": "^5.9.3",
     "vite": "^6.0.0",
+    "vite-bundle-visualizer": "^1.2.1",
     "vitest": "^4.1.4"
   }
 }

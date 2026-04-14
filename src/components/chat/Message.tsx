@@ -1,9 +1,9 @@
-import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
+import { Suspense, lazy, useState } from "react";
 import type { Message as MessageT } from "../../types";
 
 type Props = { message: MessageT };
+
+const MarkdownContent = lazy(() => import("./MarkdownContent"));
 
 export default function Message({ message }: Props) {
   const isUser = message.role === "user";
@@ -44,9 +44,9 @@ export default function Message({ message }: Props) {
           )}
         </div>
         <div className="md">
-          <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-            {message.text}
-          </ReactMarkdown>
+          <Suspense fallback={<pre className="markdownFallback">{message.text}</pre>}>
+            <MarkdownContent text={message.text} />
+          </Suspense>
         </div>
       </div>
     </div>

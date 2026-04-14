@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Settings, Scope } from "../../types";
 import { useChatStore } from "../../state/chatStore";
-import Sidebar from "../sidebar/Sidebar";
 import ChatWindow from "../chat/ChatWindow";
-import SettingsPanel from "../settings/SettingsPanel";
 import EmptyState from "../chat/EmptyState";
 import { BurgerIcon, GearIcon, MoonIcon, SunIcon } from "../ui/icons";
 
-type Props = {
+const Sidebar = lazy(() => import("../sidebar/Sidebar"));
+const SettingsPanel = lazy(() => import("../settings/SettingsPanel"));
+
+export type AppLayoutProps = {
   onLogout: () => void;
   settingsApi: {
     settings: Settings;
@@ -18,7 +19,19 @@ type Props = {
   auth: { credentials: string; scope: Scope };
 };
 
-export default function AppLayout({ onLogout, settingsApi, auth }: Props) {
+function SidebarFallback({ isOpen }: { isOpen: boolean }) {
+  return <aside className={`sidebar sidebarLoading ${isOpen ? "sidebarOpen" : ""}`} />;
+}
+
+function SettingsFallback() {
+  return (
+    <div className="overlay" role="presentation">
+      <div className="drawer drawerLoading" aria-hidden="true" />
+    </div>
+  );
+}
+
+export default function AppLayout({ onLogout, settingsApi, auth }: AppLayoutProps) {
   const { id: chatIdParam } = useParams<{ id?: string }>();
   const navigate = useNavigate();
 
@@ -56,54 +69,66 @@ export default function AppLayout({ onLogout, settingsApi, auth }: Props) {
     });
   }, [search, chats, messagesByChat]);
 
-  const openChat = (id: string) => {
+  const openChat = useCallback((id: string) => {
     navigate(`/chat/${id}`);
     setIsSidebarOpen(false);
-  };
+  }, [navigate]);
 
-  const handleNewChat = () => {
+  const handleNewChat = useCallback(() => {
     const id = createChat();
     navigate(`/chat/${id}`);
     setIsSidebarOpen(false);
-  };
+  }, [createChat, navigate]);
 
-  const handleDeleteChat = (id: string) => {
-    deleteChat(id);
-    if (activeChatId === id) {
-      navigate("/", { replace: true });
-    }
-  };
+  const handleDeleteChat = useCallback(
+    (id: string) => {
+      deleteChat(id);
+      if (activeChatId === id) {
+        navigate("/", { replace: true });
+      }
+    },
+    [activeChatId, deleteChat, navigate],
+  );
 
-  const handleRenameChat = (id: string, title: string) => {
+  const handleRenameChat = useCallback((id: string, title: string) => {
     renameChat(id, title);
-  };
+  }, [renameChat]);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const next = settingsApi.settings.theme === "dark" ? "light" : "dark";
     settingsApi.setSettings({ ...settingsApi.settings, theme: next });
-  };
+  }, [settingsApi]);
 
-  const activeChat = activeChatId
-    ? chats.find((c) => c.id === activeChatId)
-    : null;
-  const messages = activeChatId
-    ? (messagesByChat[activeChatId] ?? [])
-    : [];
+  const closeSidebar = useCallback(() => setIsSidebarOpen(false), []);
+  const openSidebar = useCallback(() => setIsSidebarOpen(true), []);
+  const openSettings = useCallback(() => setIsSettingsOpen(true), []);
+  const closeSettings = useCallback(() => setIsSettingsOpen(false), []);
+
+  const activeChat = useMemo(
+    () => (activeChatId ? chats.find((c) => c.id === activeChatId) : null),
+    [activeChatId, chats],
+  );
+  const messages = useMemo(
+    () => (activeChatId ? (messagesByChat[activeChatId] ?? []) : []),
+    [activeChatId, messagesByChat],
+  );
 
   return (
     <div className="shell">
-      <Sidebar
-        search={search}
-        onSearchChange={setSearch}
-        chats={filteredChats}
-        activeChatId={activeChatId}
-        onChatSelect={openChat}
-        onNewChat={handleNewChat}
-        onDeleteChat={handleDeleteChat}
-        onRenameChat={handleRenameChat}
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-      />
+      <Suspense fallback={<SidebarFallback isOpen={isSidebarOpen} />}>
+        <Sidebar
+          search={search}
+          onSearchChange={setSearch}
+          chats={filteredChats}
+          activeChatId={activeChatId}
+          onChatSelect={openChat}
+          onNewChat={handleNewChat}
+          onDeleteChat={handleDeleteChat}
+          onRenameChat={handleRenameChat}
+          isOpen={isSidebarOpen}
+          onClose={closeSidebar}
+        />
+      </Suspense>
 
       <div className="chatArea">
         {activeChatId ? (
@@ -113,8 +138,8 @@ export default function AppLayout({ onLogout, settingsApi, auth }: Props) {
             messages={messages}
             auth={auth}
             settings={settingsApi.settings}
-            onOpenSidebar={() => setIsSidebarOpen(true)}
-            onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenSidebar={openSidebar}
+            onOpenSettings={openSettings}
             theme={settingsApi.settings.theme}
             onToggleTheme={toggleTheme}
           />
@@ -125,7 +150,7 @@ export default function AppLayout({ onLogout, settingsApi, auth }: Props) {
                 <button
                   className="btn btnIcon burgerOnly"
                   type="button"
-                  onClick={() => setIsSidebarOpen(true)}
+                  onClick={openSidebar}
                   title="Открыть меню"
                 >
                   <BurgerIcon />
@@ -152,7 +177,7 @@ export default function AppLayout({ onLogout, settingsApi, auth }: Props) {
                 <button
                   className="btn btnIcon"
                   type="button"
-                  onClick={() => setIsSettingsOpen(true)}
+                  onClick={openSettings}
                   title="Настройки"
                 >
                   <GearIcon />
@@ -173,12 +198,14 @@ export default function AppLayout({ onLogout, settingsApi, auth }: Props) {
       </div>
 
       {isSettingsOpen ? (
-        <SettingsPanel
-          settings={settingsApi.settings}
-          onSave={settingsApi.setSettings}
-          onReset={settingsApi.reset}
-          onClose={() => setIsSettingsOpen(false)}
-        />
+        <Suspense fallback={<SettingsFallback />}>
+          <SettingsPanel
+            settings={settingsApi.settings}
+            onSave={settingsApi.setSettings}
+            onReset={settingsApi.reset}
+            onClose={closeSettings}
+          />
+        </Suspense>
       ) : null}
     </div>
   );

@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import type { Chat } from "../../types";
+import { memo, useEffect, useRef, useState } from "react";
+import type { Chat, ChatId } from "../../types";
 import { EditIcon, TrashIcon } from "../ui/icons";
 import ConfirmDialog from "../ui/ConfirmDialog";
 
 type Props = {
   chat: Chat;
   isActive: boolean;
-  onSelect: () => void;
-  onDelete: () => void;
-  onRename: (title: string) => void;
+  onSelect: (id: ChatId) => void;
+  onDelete: (id: ChatId) => void;
+  onRename: (id: ChatId, title: string) => void;
 };
 
 const formatDate = (iso: string) => {
@@ -16,7 +16,7 @@ const formatDate = (iso: string) => {
   return d.toLocaleDateString(undefined, { day: "2-digit", month: "2-digit" });
 };
 
-export default function ChatItem({
+function ChatItem({
   chat,
   isActive,
   onSelect,
@@ -29,6 +29,10 @@ export default function ChatItem({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    setEditTitle(chat.title);
+  }, [chat.title]);
+
+  useEffect(() => {
     if (isEditing) {
       inputRef.current?.focus();
       inputRef.current?.select();
@@ -38,7 +42,7 @@ export default function ChatItem({
   const saveEdit = () => {
     const trimmed = editTitle.trim();
     if (trimmed && trimmed !== chat.title) {
-      onRename(trimmed);
+      onRename(chat.id, trimmed);
     } else {
       setEditTitle(chat.title);
     }
@@ -51,9 +55,9 @@ export default function ChatItem({
         className={`chatItem ${isActive ? "chatItemActive" : ""}`}
         role="listitem"
         tabIndex={0}
-        onClick={() => !isEditing && onSelect()}
+        onClick={() => !isEditing && onSelect(chat.id)}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && !isEditing) onSelect();
+          if (e.key === "Enter" && !isEditing) onSelect(chat.id);
         }}
       >
         <div className="chatItemContent">
@@ -113,7 +117,7 @@ export default function ChatItem({
           message={`Удалить чат «${chat.title}»?`}
           onConfirm={() => {
             setShowConfirm(false);
-            onDelete();
+            onDelete(chat.id);
           }}
           onCancel={() => setShowConfirm(false)}
         />
@@ -121,3 +125,5 @@ export default function ChatItem({
     </>
   );
 }
+
+export default memo(ChatItem);

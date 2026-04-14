@@ -135,6 +135,13 @@ textarea {
   padding: 12px 14px 14px;
 }
 
+.routeFallback {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+}
+
 /* UI */
 .btn {
   border: 1px solid var(--color-border);
@@ -453,6 +460,34 @@ textarea {
   display: inline-flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.errorMessageAction {
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.errorBoundaryFallback {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  border: 1px dashed var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+}
+
+.errorBoundaryFallback h3 {
+  font-size: 1rem;
+}
+
+.errorBoundaryFallback p {
+  color: var(--color-text-muted);
+  max-width: 60ch;
 }
 
 .emptyState {
@@ -490,6 +525,12 @@ textarea {
   overflow: auto;
 }
 
+.markdownFallback {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font: inherit;
+}
+
 /* Topbar actions */
 .topbarActions {
   display: flex;
@@ -506,6 +547,33 @@ textarea {
 /* Sidebar search */
 .overlayLeft {
   justify-content: flex-start;
+}
+
+.sidebarLoading {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.08) 25%,
+      rgba(148, 163, 184, 0.16) 37%,
+      rgba(148, 163, 184, 0.08) 63%
+    ),
+    var(--color-surface);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.drawerLoading {
+  opacity: 0.85;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.08) 25%,
+      rgba(148, 163, 184, 0.16) 37%,
+      rgba(148, 163, 184, 0.08) 63%
+    ),
+    var(--color-surface);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
 }
 
 .searchContainer {
@@ -687,6 +755,15 @@ textarea {
 .md pre code.hljs {
   background: transparent;
   padding: 0;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }
 
 @media (max-width: 480px) {

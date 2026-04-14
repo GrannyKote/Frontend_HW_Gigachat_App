@@ -16,9 +16,13 @@ const scopes: { id: Scope; label: string }[] = [
   { id: "GIGACHAT_API_CORP", label: "GIGACHAT_API_CORP" },
 ];
 
+const defaultScope =
+  scopes.find((scopeOption) => scopeOption.id === import.meta.env.VITE_DEFAULT_SCOPE)?.id ??
+  "GIGACHAT_API_PERS";
+
 export default function AuthForm({ onLogin }: Props) {
   const [credentials, setCredentials] = useState("");
-  const [scope, setScope] = useState<Scope>("GIGACHAT_API_PERS");
+  const [scope, setScope] = useState<Scope>(defaultScope);
   const [touched, setTouched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState("");

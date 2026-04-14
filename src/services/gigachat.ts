@@ -1,6 +1,7 @@
 import type { Settings, Scope } from "../types";
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "/api").replace(/\/$/, "");
 
 /**
  * Prepare credentials for the Authorization: Basic header.
@@ -34,7 +35,7 @@ export async function getAccessToken(
     );
   }
 
-  const res = await fetch("/api/auth", {
+  const res = await fetch(`${API_BASE_URL}/auth`, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -76,7 +77,7 @@ export async function sendChatCompletion(
   onChunk: (text: string) => void,
   signal?: AbortSignal,
 ): Promise<void> {
-  const res = await fetch("/api/gigachat/chat/completions", {
+  const res = await fetch(`${API_BASE_URL}/gigachat/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -135,7 +136,7 @@ export async function sendChatCompletionSync(
   settings: Settings,
   signal?: AbortSignal,
 ): Promise<string> {
-  const res = await fetch("/api/gigachat/chat/completions", {
+  const res = await fetch(`${API_BASE_URL}/gigachat/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
