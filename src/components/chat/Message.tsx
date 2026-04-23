@@ -1,15 +1,11 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import type { Message as MessageT } from "../../types";
-type Variant = "user" | "assistant";
 
-type MessageProps = {
-  message: MessageT;
-  variant?: Variant;
-};
+type Props = { message: MessageT };
 
-export default function Message({ message, variant }: MessageProps) {
-  const isUser = (variant ?? message.role) === "user";
+export default function Message({ message }: Props) {
+  const isUser = message.role === "user";
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
