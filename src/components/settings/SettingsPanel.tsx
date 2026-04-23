@@ -33,7 +33,7 @@ export default function SettingsPanel({ settings, onSave, onReset, onClose }: Pr
         onClick={(e) => e.stopPropagation()}
       >
         <div className="row">
-          <div className="drawerTitle">Настройки</div>
+          <div style={{ fontSize: 18, fontWeight: 800 }}>Настройки</div>
           <div className="spacer" />
           <button className="btn btnIcon" type="button" onClick={onClose} title="Закрыть">
             ✕
@@ -109,23 +109,19 @@ export default function SettingsPanel({ settings, onSave, onReset, onClose }: Pr
 
         <div className="field">
           <div className="label">Тема</div>
-          <label className="themeToggle" aria-label="Переключатель темы">
+          <label className="row" style={{ cursor: "pointer" }}>
             <input
-              className="themeToggleInput"
               type="checkbox"
               checked={draft.theme === "dark"}
               onChange={(e) =>
                 setDraft((s) => ({ ...s, theme: e.target.checked ? "dark" : "light" }))
               }
             />
-            <span className="themeToggleTrack">
-              <span className="themeToggleThumb" />
-            </span>
             <span>{draft.theme === "dark" ? "Тёмная" : "Светлая"}</span>
           </label>
         </div>
 
-        <div className="row rowTopGap">
+        <div className="row" style={{ marginTop: 16 }}>
           <button
             className="btn"
             type="button"

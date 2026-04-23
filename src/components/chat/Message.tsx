@@ -16,7 +16,7 @@ export default function Message({ message, variant }: MessageProps) {
     try {
       await navigator.clipboard.writeText(message.text);
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
+      window.setTimeout(() => setCopied(false), 900);
     } catch {
       // ignore
     }
@@ -33,16 +33,9 @@ export default function Message({ message, variant }: MessageProps) {
       <div className={`bubble ${isUser ? "bubbleUser" : ""}`}>
         <div className="bubbleHeader">
           <div className="author">{message.authorLabel}</div>
-          {!isUser ? (
-            <button
-              className={`copyBtn ${copied ? "copyBtnCopied" : ""}`}
-              type="button"
-              onClick={copy}
-              title={copied ? "Скопировано" : "Копировать"}
-            >
-              {copied ? "Скопировано" : "Копировать"}
-            </button>
-          ) : null}
+          <button className="copyBtn" type="button" onClick={copy} title="Копировать">
+            {copied ? "Скопировано" : "Копировать"}
+          </button>
         </div>
         <div className="md">
           <ReactMarkdown>{message.text}</ReactMarkdown>

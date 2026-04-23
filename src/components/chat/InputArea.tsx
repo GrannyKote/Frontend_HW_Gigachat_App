@@ -1,18 +1,26 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ImageIcon } from "../ui/icons";
 
 type Props = {
   onSend: (value: string) => void;
-  onStop: () => void;
   isLoading: boolean;
 };
 
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
-export default function InputArea({ onSend, onStop, isLoading }: Props) {
+export default function InputArea({ onSend, isLoading }: Props) {
   const ref = useRef<HTMLTextAreaElement | null>(null);
   const [value, setValue] = useState("");
-  const maxHeight = 200;
+
+  const maxHeight = useMemo(() => {
+    const el = ref.current;
+    if (!el) return 200;
+    const cs = window.getComputedStyle(el);
+    const lineHeight = Number.parseFloat(cs.lineHeight || "20") || 20;
+    const paddingTop = Number.parseFloat(cs.paddingTop || "0") || 0;
+    const paddingBottom = Number.parseFloat(cs.paddingBottom || "0") || 0;
+    return lineHeight * 5 + paddingTop + paddingBottom + 2;
+  }, []);
 
   useEffect(() => {
     const el = ref.current;
@@ -32,17 +40,19 @@ export default function InputArea({ onSend, onStop, isLoading }: Props) {
   };
 
   return (
-    <div className="row inputRow inputRowBottom">
+    <div className="row" style={{ alignItems: "flex-end" }}>
       <button className="btn btnIcon" type="button" title="Прикрепить изображение">
         <ImageIcon />
       </button>
 
       <textarea
         ref={ref}
-        className="control inputControl"
+        className="control"
+        style={{ flex: 1, minHeight: 44, maxHeight, overflow: "auto" }}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Напишите сообщение…"
+        disabled={isLoading}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
@@ -51,20 +61,12 @@ export default function InputArea({ onSend, onStop, isLoading }: Props) {
         }}
       />
 
-      {isLoading ? (
-        <button className="btn btnDanger inputActionBtn" type="button" onClick={onStop}>
-          Стоп
-        </button>
-      ) : (
-        <button
-          className="btn btnPrimary inputActionBtn"
-          type="button"
-          onClick={handleSend}
-          disabled={!canSend}
-        >
-          Отправить
-        </button>
-      )}
+      <button className="btn" type="button" disabled>
+        Стоп
+      </button>
+      <button className="btn btnPrimary" type="button" onClick={handleSend} disabled={!canSend}>
+        Отправить
+      </button>
     </div>
   );
 }

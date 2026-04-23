@@ -53,7 +53,7 @@ export default function AppLayout({ onLogout, settingsApi }: Props) {
           onOpenSettings={() => setIsSettingsOpen(true)}
         />
 
-        <div className="chatFooter">
+        <div style={{ padding: 12, borderTop: "1px solid var(--color-border)" }}>
           <button className="btn btnDanger" onClick={onLogout} type="button">
             Выйти
           </button>
