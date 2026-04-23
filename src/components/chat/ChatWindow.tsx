@@ -1,136 +1,108 @@
-import { useEffect, useRef } from "react";
-import type { Settings } from "../../types";
-import { useChatStore } from "../../store/chatStore";
-import { sendMessage } from "../../api/gigachat";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { Message as MessageT, MessageRole } from "../../types";
 import { BurgerIcon, GearIcon } from "../ui/icons";
 import MessageList from "./MessageList";
 import InputArea from "./InputArea";
 
+type ChatMessage = {
+  id: string;
+  role: MessageRole;
+  content: string;
+  timestamp: string;
+};
+
 type Props = {
-  chatId: string;
   chatTitle: string;
-  settings: Settings;
+  messages: MessageT[];
   onOpenSidebar: () => void;
   onOpenSettings: () => void;
 };
 
 export default function ChatWindow({
-  chatId,
   chatTitle,
-  settings,
+  messages,
   onOpenSidebar,
   onOpenSettings,
 }: Props) {
-  const {
-    messages: allMessages,
-    isLoading,
-    error,
-    addMessage,
-    appendToMessage,
-    updateMessage,
-    setLoading,
-    setError,
-    updateChatTitleFromFirstMessage,
-  } = useChatStore();
-
-  const messages = allMessages[chatId] ?? [];
-  const abortRef = useRef<AbortController | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const timeoutRef = useRef<number | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
 
-  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    setChatMessages(
+      messages.map((m) => ({
+        id: m.id,
+        role: m.role,
+        content: m.text,
+        timestamp: m.createdAt,
+      })),
+    );
+    setIsLoading(false);
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, [messages, chatTitle]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const renderedMessages = useMemo<MessageT[]>(
+    () =>
+      chatMessages.map((m) => ({
+        id: m.id,
+        role: m.role,
+        text: m.content,
+        createdAt: m.timestamp,
+        authorLabel: m.role === "user" ? "Вы" : "GigaChat",
+      })),
+    [chatMessages],
+  );
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [renderedMessages]);
 
-  const onSend = async (text: string) => {
-    if (!text.trim() || isLoading) return;
+  const onSend = (value: string) => {
+    if (!value.trim() || isLoading) return;
 
-    setError(null);
-
-    // Add user message
-    const userMsg = {
+    const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
-      role: "user" as const,
-      authorLabel: "Вы",
-      text: text.trim(),
-      createdAt: new Date().toISOString(),
+      role: "user",
+      content: value,
+      timestamp: new Date().toISOString(),
     };
-    addMessage(chatId, userMsg);
 
-    // Auto-title from first user message
-    const currentMessages = useChatStore.getState().messages[chatId] ?? [];
-    if (currentMessages.filter((m) => m.role === "user").length === 1) {
-      updateChatTitleFromFirstMessage(chatId, text.trim());
-    }
+    setChatMessages((prev) => [...prev, userMessage]);
+    setIsLoading(true);
 
-    // Create placeholder for assistant response
-    const assistantId = crypto.randomUUID();
-    const assistantMsg = {
-      id: assistantId,
-      role: "assistant" as const,
-      authorLabel: settings.model,
-      text: "",
-      createdAt: new Date().toISOString(),
-    };
-    addMessage(chatId, assistantMsg);
-    setLoading(true);
-
-    abortRef.current = new AbortController();
-
-    try {
-      // Build messages array: all messages up to (but not including) the empty assistant placeholder
-      const storeMessages = useChatStore.getState().messages[chatId] ?? [];
-      const contextMessages = storeMessages.filter(
-        (m) => !(m.id === assistantId && m.text === ""),
-      );
-
-      await sendMessage(
-        contextMessages,
-        settings,
-        (chunk) => {
-          appendToMessage(chatId, assistantId, chunk);
-        },
-        abortRef.current.signal,
-      );
-
-      // Persist final message text
-      const finalText =
-        useChatStore.getState().messages[chatId]?.find((m) => m.id === assistantId)?.text ?? "";
-      updateMessage(chatId, assistantId, finalText);
-    } catch (err) {
-      if (err instanceof DOMException && err.name === "AbortError") {
-        // User stopped generation — keep partial text
-        const partialText =
-          useChatStore.getState().messages[chatId]?.find((m) => m.id === assistantId)?.text ?? "";
-        if (!partialText) {
-          // Remove empty placeholder
-          const msgs = useChatStore.getState().messages[chatId]?.filter(
-            (m) => m.id !== assistantId,
-          ) ?? [];
-          useChatStore.setState((s) => ({
-            messages: { ...s.messages, [chatId]: msgs },
-          }));
-        } else {
-          updateMessage(chatId, assistantId, partialText);
-        }
-      } else {
-        const message = err instanceof Error ? err.message : "Неизвестная ошибка";
-        setError(message);
-        // Remove empty assistant placeholder on error
-        const msgs =
-          useChatStore.getState().messages[chatId]?.filter((m) => m.id !== assistantId) ?? [];
-        useChatStore.setState((s) => ({
-          messages: { ...s.messages, [chatId]: msgs },
-        }));
-      }
-    } finally {
-      setLoading(false);
-      abortRef.current = null;
-    }
+    const delay = 1000 + Math.floor(Math.random() * 1001);
+    timeoutRef.current = window.setTimeout(() => {
+      const assistantMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "Это мок-ответ ассистента. Позже здесь будет реальный ответ API.",
+        timestamp: new Date().toISOString(),
+      };
+      setChatMessages((prev) => [...prev, assistantMessage]);
+      setIsLoading(false);
+      timeoutRef.current = null;
+    }, delay);
   };
 
   const onStop = () => {
-    abortRef.current?.abort();
+    if (!isLoading) return;
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -159,12 +131,7 @@ export default function ChatWindow({
       </div>
 
       <div className="messages">
-        <MessageList messages={messages} isTypingVisible={isLoading} />
-        {error && (
-          <div className="errorBanner" role="alert">
-            <strong>Ошибка: </strong>{error}
-          </div>
-        )}
+        <MessageList messages={renderedMessages} isTypingVisible={isLoading} />
         <div ref={endRef} />
       </div>
 
@@ -174,3 +141,4 @@ export default function ChatWindow({
     </>
   );
 }
+

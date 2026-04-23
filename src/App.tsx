@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
 import AuthForm from "./components/auth/AuthForm";
 import type { Scope, Settings } from "./types";
@@ -46,17 +45,6 @@ export default function App() {
     return <AuthForm onLogin={onLogin} />;
   }
 
-  return (
-    <Routes>
-      <Route
-        path="/"
-        element={<AppLayout onLogout={onLogout} settingsApi={settingsApi} />}
-      />
-      <Route
-        path="/chat/:id"
-        element={<AppLayout onLogout={onLogout} settingsApi={settingsApi} />}
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
+  return <AppLayout onLogout={onLogout} settingsApi={settingsApi} />;
 }
+
