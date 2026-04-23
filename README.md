@@ -6,6 +6,7 @@
 
 - Публичное приложение: `<https://your-app.vercel.app>`
 - После деплоя замените ссылку выше на реальный URL проекта.
+- Видео демо: [`demo/2026-04-23 21-22-02.mp4`](demo/2026-04-23%2021-22-02.mp4)
 - Артефакты аудита бандла:
   `docs/bundle-stats.html`,
   `docs/bundle-stats.json`,
@@ -14,7 +15,12 @@
 ## Скриншоты
 
 - Скриншот visualizer бандла: `docs/bundle-visualizer.png`
-- Скриншоты интерфейса или запись работы приложения можно добавить в папку `docs/` после публикации проекта.
+- Экран старта: [`demo/start.png`](demo/start.png)
+- Список чатов: [`demo/chat_list.png`](demo/chat_list.png)
+- Новый чат: [`demo/new_chat.png`](demo/new_chat.png)
+- Окно чата: [`demo/chat.png`](demo/chat.png)
+- Форматирование в чате: [`demo/chat_format.png`](demo/chat_format.png)
+- Настройки: [`demo/settings.png`](demo/settings.png)
 
 ## Стек
 
