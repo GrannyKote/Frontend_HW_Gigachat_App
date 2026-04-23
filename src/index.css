@@ -121,7 +121,8 @@ textarea {
 
 .messages {
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 18px 14px;
   display: flex;
   flex-direction: column;
@@ -132,6 +133,13 @@ textarea {
   border-top: 1px solid var(--color-border);
   background: var(--color-surface);
   padding: 12px 14px 14px;
+}
+
+.routeFallback {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
 }
 
 /* UI */
@@ -307,6 +315,26 @@ textarea {
   border-radius: 10px;
   padding: 6px 10px;
   cursor: pointer;
+  font-size: 0.8rem;
+  transition: opacity 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.copiedBtn {
+  opacity: 1;
+  pointer-events: none;
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: default;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #22c55e;
 }
 
 .bubble:hover .copyBtn {
@@ -318,6 +346,8 @@ textarea {
   line-height: 1.45;
   font-size: 0.95rem;
   white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .md code {
@@ -430,6 +460,34 @@ textarea {
   display: inline-flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.errorMessageAction {
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.errorBoundaryFallback {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  border: 1px dashed var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+}
+
+.errorBoundaryFallback h3 {
+  font-size: 1rem;
+}
+
+.errorBoundaryFallback p {
+  color: var(--color-text-muted);
+  max-width: 60ch;
 }
 
 .emptyState {
@@ -451,6 +509,172 @@ textarea {
   display: grid;
   place-items: center;
   font-size: 26px;
+}
+
+/* InputArea */
+.inputRow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.inputTextarea {
+  flex: 1;
+  min-height: 44px;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.markdownFallback {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font: inherit;
+}
+
+/* Topbar actions */
+.topbarActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Logout bar */
+.logoutBar {
+  padding: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Sidebar search */
+.overlayLeft {
+  justify-content: flex-start;
+}
+
+.sidebarLoading {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.08) 25%,
+      rgba(148, 163, 184, 0.16) 37%,
+      rgba(148, 163, 184, 0.08) 63%
+    ),
+    var(--color-surface);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.drawerLoading {
+  opacity: 0.85;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.08) 25%,
+      rgba(148, 163, 184, 0.16) 37%,
+      rgba(148, 163, 184, 0.08) 63%
+    ),
+    var(--color-surface);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.searchContainer {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.searchField {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.searchIconPos {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.8;
+}
+
+.searchInputPadded {
+  padding-left: 38px;
+}
+
+/* ChatItem */
+.chatItemContent {
+  min-width: 0;
+}
+
+/* EmptyState */
+.emptyStateTitle {
+  font-weight: 650;
+  margin-bottom: 4px;
+}
+
+/* Auth */
+.authPage {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.authCard {
+  width: min(520px, 100%);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.authHeader {
+  margin-bottom: 10px;
+}
+
+.authTitle {
+  font-size: 18px;
+  font-weight: 750;
+  margin-bottom: 6px;
+}
+
+.authSubtitle {
+  color: var(--color-text-muted);
+}
+
+.scopeGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.scopeOption {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-2);
+  cursor: pointer;
+}
+
+.authActions {
+  margin-top: 14px;
+}
+
+/* Settings */
+.settingsTitle {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.settingsActions {
+  margin-top: 16px;
+}
+
+.themeLabel {
+  cursor: pointer;
 }
 
 /* Mobile */
@@ -478,5 +702,107 @@ textarea {
   }
   .chatArea {
     min-height: 100vh;
+  }
+}
+
+/* Confirm dialog */
+.overlayCenter {
+  justify-content: center;
+  align-items: center;
+}
+
+.confirmDialog {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 18px;
+  width: min(400px, 90vw);
+  box-shadow: var(--shadow);
+}
+
+.confirmMessage {
+  margin-bottom: 14px;
+  font-size: 0.95rem;
+}
+
+.confirmActions {
+  justify-content: flex-end;
+}
+
+/* Chat item edit input */
+.chatItemEditInput {
+  width: 100%;
+  font: inherit;
+  font-weight: 650;
+  font-size: 0.95rem;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 4px 8px;
+  outline: none;
+  color: inherit;
+}
+
+/* Empty chat list */
+.chatListEmpty {
+  padding: 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+/* highlight.js overrides */
+.md pre code.hljs {
+  background: transparent;
+  padding: 0;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .bubble {
+    max-width: 95%;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+
+  .btnIcon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .miniIconBtn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .inputArea {
+    padding: 8px 10px 10px;
+  }
+
+  .topbar {
+    padding: 0 10px;
+  }
+
+  .messages {
+    padding: 12px 10px;
+  }
+
+  .drawer {
+    width: 100vw;
+  }
+
+  .authCard {
+    padding: 14px;
+    border-radius: 14px;
   }
 }

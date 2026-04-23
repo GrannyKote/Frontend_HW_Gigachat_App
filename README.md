@@ -1,27 +1,71 @@
-## Gigachat React App
+# GigaChat React App
 
-This is a mock Gigachat application created with Vite.
+Приложение-чата на React и Vite с интеграцией GigaChat API.
 
-### Install
+## Демо
 
-1. Open a terminal in this folder (`d:\Учеба\Frontend`).
-2. Run:
+- Публичное приложение: `<https://your-app.vercel.app>`
+- После деплоя замените ссылку выше на реальный URL проекта.
+- Артефакты аудита бандла:
+  `docs/bundle-stats.html`,
+  `docs/bundle-stats.json`,
+  `docs/bundle-visualizer.png`
+
+## Скриншоты
+
+- Скриншот visualizer бандла: `docs/bundle-visualizer.png`
+- Скриншоты интерфейса или запись работы приложения можно добавить в папку `docs/` после публикации проекта.
+
+## Стек
+
+- `React` `18.3.1`
+- `TypeScript` `5.9.3`
+- `React Router DOM` `7.14.0`
+- `Zustand` `5.0.12` для хранения состояния чатов и сообщений
+- `CSS` для стилизации интерфейса
+- `Vite` `6.0.0` как инструмент сборки и dev server
+
+## Запуск локально
+
+1. Клонируйте репозиторий:
+
+```bash
+git clone <URL_ВАШЕГО_РЕПОЗИТОРИЯ>
+cd Frontend_HW_Gigachat_App
+```
+
+2. Установите зависимости:
 
 ```bash
 npm install
 ```
 
-### Run in development mode
+3. Создайте локальный файл окружения на основе шаблона:
+
+```bash
+cp .env.example .env
+```
+
+Если вы работаете в PowerShell, можно использовать:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+4. Заполните `.env` нужными значениями.
+
+5. Запустите приложение:
 
 ```bash
 npm run dev
 ```
 
-Then open the printed localhost URL in your browser (usually `http://localhost:5173`).
+6. Откройте адрес, который выведет Vite в терминале. Обычно это `http://localhost:5173`.
 
-### Build for production
+## Переменные окружения
 
-```bash
-npm run build
-```
+| Переменная | Назначение | Пример значения |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | Базовый префикс для запросов к API и auth endpoint. В dev-режиме обычно указывает на проксируемый путь Vite. | `/api` |
+| `VITE_DEFAULT_SCOPE` | Значение scope, которое будет выбрано по умолчанию на форме авторизации. | `GIGACHAT_API_PERS` |
 

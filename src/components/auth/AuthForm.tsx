@@ -4,7 +4,10 @@ import type { Scope } from "../../types";
 import ErrorMessage from "../ui/ErrorMessage";
 
 type Props = {
-  onLogin: (payload: { credentials: string; scope: Scope }) => void;
+  onLogin: (payload: {
+    credentials: string;
+    scope: Scope;
+  }) => Promise<string | null>;
 };
 
 const scopes: { id: Scope; label: string }[] = [
@@ -13,90 +16,82 @@ const scopes: { id: Scope; label: string }[] = [
   { id: "GIGACHAT_API_CORP", label: "GIGACHAT_API_CORP" },
 ];
 
+const defaultScope =
+  scopes.find((scopeOption) => scopeOption.id === import.meta.env.VITE_DEFAULT_SCOPE)?.id ??
+  "GIGACHAT_API_PERS";
+
 export default function AuthForm({ onLogin }: Props) {
   const [credentials, setCredentials] = useState("");
-  const [scope, setScope] = useState<Scope>("GIGACHAT_API_PERS");
+  const [scope, setScope] = useState<Scope>(defaultScope);
   const [touched, setTouched] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
 
-  const error = useMemo(() => {
+  const validationError = useMemo(() => {
     if (!touched) return "";
     if (!credentials.trim()) return "Credentials не должны быть пустыми.";
     return "";
   }, [credentials, touched]);
 
-  const submit = (e: FormEvent) => {
+  const displayError = authError || validationError;
+
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     setTouched(true);
-    if (!credentials.trim()) return;
-    onLogin({ credentials: credentials.trim(), scope });
+    setAuthError("");
+    const trimmed = credentials.trim();
+    if (!trimmed) return;
+
+    setLoading(true);
+    const err = await onLogin({ credentials: trimmed, scope });
+    setLoading(false);
+
+    if (err) {
+      setAuthError(err);
+    }
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "grid",
-        placeItems: "center",
-        padding: 16,
-      }}
-    >
-      <form
-        onSubmit={submit}
-        style={{
-          width: "min(520px, 100%)",
-          border: "1px solid var(--color-border)",
-          background: "var(--color-surface)",
-          borderRadius: 18,
-          padding: 18,
-          boxShadow: "var(--shadow)",
-        }}
-      >
-        <div style={{ marginBottom: 10 }}>
-          <div style={{ fontSize: 18, fontWeight: 750, marginBottom: 6 }}>
-            Вход
-          </div>
-          <div style={{ color: "var(--color-text-muted)" }}>
-            Моковая авторизация для оболочки приложения.
+    <div className="authPage">
+      <form onSubmit={submit} className="authCard">
+        <div className="authHeader">
+          <div className="authTitle">Вход в GigaChat</div>
+          <div className="authSubtitle">
+            Введите ключ авторизации из личного кабинета GigaChat (Base64) или
+            Client&nbsp;ID:Client&nbsp;Secret.
           </div>
         </div>
 
         <div className="field">
-          <div className="label">Credentials (Base64)</div>
+          <div className="label">Ключ авторизации</div>
           <input
             className="control"
             type="password"
             value={credentials}
-            onChange={(e) => setCredentials(e.target.value)}
+            onChange={(e) => {
+              setCredentials(e.target.value);
+              setAuthError("");
+            }}
             onBlur={() => setTouched(true)}
-            placeholder="Введите Base64-строку"
+            placeholder="Base64-строка или client_id:client_secret"
             autoComplete="off"
+            disabled={loading}
           />
-          {error ? <ErrorMessage>{error}</ErrorMessage> : null}
+          {displayError ? <ErrorMessage>{displayError}</ErrorMessage> : null}
         </div>
 
         <div className="field">
           <div className="label">Scope</div>
-          <div style={{ display: "grid", gap: 8 }}>
+          <div className="scopeGrid">
             {scopes.map((s) => (
-              <label
-                key={s.id}
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  alignItems: "center",
-                  padding: "10px 12px",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: 12,
-                  background: "var(--color-surface-2)",
-                  cursor: "pointer",
-                }}
-              >
+              <label key={s.id} className="scopeOption">
                 <input
                   type="radio"
                   name="scope"
                   value={s.id}
                   checked={scope === s.id}
                   onChange={() => setScope(s.id)}
+                  disabled={loading}
                 />
                 <span>{s.label}</span>
               </label>
@@ -104,13 +99,16 @@ export default function AuthForm({ onLogin }: Props) {
           </div>
         </div>
 
-        <div className="row" style={{ marginTop: 14 }}>
-          <button className="btn btnPrimary" type="submit">
-            Войти
+        <div className="row authActions">
+          <button
+            className="btn btnPrimary"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Проверка…" : "Войти"}
           </button>
         </div>
       </form>
     </div>
   );
 }
-

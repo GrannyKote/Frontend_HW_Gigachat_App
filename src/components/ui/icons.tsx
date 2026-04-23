@@ -75,3 +75,33 @@ export function ImageIcon() {
   );
 }
 
+export function StopIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+      <rect fill="currentColor" x="6" y="6" width="12" height="12" rx="2" />
+    </svg>
+  );
+}
+
+export function SunIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M12 3a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V4a1 1 0 0 1 1-1m4.95 2.05a1 1 0 0 1 0 1.41l-.71.71a1 1 0 1 1-1.41-1.41l.7-.71a1 1 0 0 1 1.42 0M20 11a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2zM5 12a1 1 0 0 1-1 1H3a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1m2.76-5.24a1 1 0 0 1-1.41 0l-.71-.71a1 1 0 0 1 1.41-1.41l.71.7a1 1 0 0 1 0 1.42m-.01 10.49a1 1 0 0 1 0 1.41l-.71.71a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 0 1 1.42 0m10.49-.01a1 1 0 0 1 1.41 0l.71.71a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 0 1 0-1.42M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8m0 2a2 2 0 1 1 0 4a2 2 0 0 1 0-4m0 9a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1"
+      />
+    </svg>
+  );
+}
+
+export function MoonIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M12.1 22c-5.5 0-10-4.5-10-10c0-4.8 3.4-8.8 8.1-9.8c.5-.1 1 .1 1.3.5s.2 1-.2 1.3c-1.5 1.3-2.3 3.2-2.3 5.2c0 3.9 3.1 7 7 7c1.9 0 3.7-.8 5-2.1c.4-.3.9-.4 1.3-.2c.4.3.6.7.5 1.2c-.8 4.6-4.9 7.9-9.7 7.9z"
+      />
+    </svg>
+  );
+}
+

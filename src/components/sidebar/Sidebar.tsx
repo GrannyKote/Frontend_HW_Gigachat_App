@@ -6,8 +6,11 @@ type Props = {
   search: string;
   onSearchChange: (v: string) => void;
   chats: Chat[];
-  activeChatId: ChatId;
+  activeChatId: ChatId | null;
   onChatSelect: (id: ChatId) => void;
+  onNewChat: () => void;
+  onDeleteChat: (id: ChatId) => void;
+  onRenameChat: (id: ChatId, title: string) => void;
   isOpen: boolean;
   onClose: () => void;
 };
@@ -18,6 +21,9 @@ export default function Sidebar({
   chats,
   activeChatId,
   onChatSelect,
+  onNewChat,
+  onDeleteChat,
+  onRenameChat,
   isOpen,
   onClose,
 }: Props) {
@@ -25,34 +31,28 @@ export default function Sidebar({
     <>
       {isOpen ? (
         <div
-          className="overlay"
+          className="overlay overlayLeft"
           onClick={onClose}
           role="presentation"
-          style={{ justifyContent: "flex-start" }}
         />
       ) : null}
       <aside className={`sidebar ${isOpen ? "sidebarOpen" : ""}`}>
         <div className="sidebarHeader">
-          <button className="btn btnIcon" type="button" title="Новый чат">
+          <button
+            className="btn btnIcon"
+            type="button"
+            title="Новый чат"
+            onClick={onNewChat}
+          >
             <PlusIcon />
           </button>
-          <div style={{ flex: 1, display: "flex", gap: 10, minWidth: 0 }}>
-            <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-              <div
-                style={{
-                  position: "absolute",
-                  left: 12,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  opacity: 0.8,
-                }}
-                aria-hidden="true"
-              >
+          <div className="searchContainer">
+            <div className="searchField">
+              <div className="searchIconPos" aria-hidden="true">
                 <SearchIcon />
               </div>
               <input
-                className="searchInput"
-                style={{ paddingLeft: 38 }}
+                className="searchInput searchInputPadded"
                 value={search}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Поиск по чатам"
@@ -65,9 +65,10 @@ export default function Sidebar({
           chats={chats}
           activeChatId={activeChatId}
           onChatSelect={onChatSelect}
+          onDeleteChat={onDeleteChat}
+          onRenameChat={onRenameChat}
         />
       </aside>
     </>
   );
 }
-

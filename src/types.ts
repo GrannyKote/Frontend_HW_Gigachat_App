@@ -6,7 +6,7 @@ export type Chat = {
   lastMessageAt: string; // ISO
 };
 
-export type MessageRole = "user" | "assistant";
+export type MessageRole = "user" | "assistant" | "system";
 
 export type Message = {
   id: string;
@@ -36,3 +36,21 @@ export type Settings = {
   theme: "light" | "dark";
 };
 
+export type ChatState = {
+  chats: Chat[];
+  messagesByChat: Record<ChatId, Message[]>;
+  activeChatId: ChatId | null;
+  isLoading: boolean;
+  error: string | null;
+};
+
+export type ChatAction =
+  | { type: "CREATE_CHAT"; chat: Chat }
+  | { type: "DELETE_CHAT"; id: ChatId }
+  | { type: "RENAME_CHAT"; id: ChatId; title: string }
+  | { type: "SET_ACTIVE_CHAT"; id: ChatId | null }
+  | { type: "ADD_MESSAGE"; chatId: ChatId; message: Message }
+  | { type: "UPDATE_MESSAGE"; chatId: ChatId; messageId: string; text: string }
+  | { type: "SET_LOADING"; loading: boolean }
+  | { type: "SET_ERROR"; error: string | null }
+  | { type: "LOAD_STATE"; chats: Chat[]; messagesByChat: Record<ChatId, Message[]> };
