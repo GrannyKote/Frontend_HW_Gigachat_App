@@ -4,17 +4,10 @@
 
 ## Демо
 
-- Публичное приложение: `<https://your-app.vercel.app>`
-- После деплоя замените ссылку выше на реальный URL проекта.
 - Видео демо: [`demo/2026-04-23 21-22-02.mp4`](demo/2026-04-23%2021-22-02.mp4)
-- Артефакты аудита бандла:
-  `docs/bundle-stats.html`,
-  `docs/bundle-stats.json`,
-  `docs/bundle-visualizer.png`
 
 ## Скриншоты
 
-- Скриншот visualizer бандла: `docs/bundle-visualizer.png`
 - Экран старта: [`demo/start.png`](demo/start.png)
 - Список чатов: [`demo/chat_list.png`](demo/chat_list.png)
 - Новый чат: [`demo/new_chat.png`](demo/new_chat.png)
